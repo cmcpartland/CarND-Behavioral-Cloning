@@ -34,29 +34,27 @@ The goals / steps of this project are the following:
 -	output.mp4 – the video of the simulator in autonomous mode, being controlled by the model
 
 
-#### 2. Submission includes functional code
-Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
+#### 2. The Udacity simulator can be run using my mode with the following command:
 ```sh
-python drive.py model.h5
+python drive.py model_trained.h5
 ```
 
-#### 3. Submission code is usable and readable
+#### 3. 
+Running model.py will attempt to train the model using a convnet on data generated using the Udacity simulator in training mode. The model is afterwards saved locally as model.h5. This module shows the pipeline used to pull and process the training data, and also shows the structure of the convnet used. 
+Running model_retrain.py will attempt to load a previously saved model and train it on a new data set. This module is used to incrementally train the model in case more training data is needed to further train a somewhat successful model.
 
-The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
 
-### Model Architecture and Training Strategy
+### Model Architecture
 
-#### 1. An appropriate model architecture has been employed
+#### 1. Pre-Processing
 
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
+The only pre-processing done is normalization on line 60 of model.py, which normalizes the pixel color values to a range of [-0.5, 0.5]. 
 
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
+#### 2. Model Architecture
 
-#### 2. Attempts to reduce overfitting in the model
-
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
-
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The model I used is a convolutional neural network based on nVidia’s end-to-end deep learning CNN for autonomous driving, found here https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/
+A visual model is provided by nVidia:
+![alt text][modelarchitecture]
 
 #### 3. Model parameter tuning
 
