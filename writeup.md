@@ -18,7 +18,7 @@ The goals / steps of this project are the following:
 [problemturn]: ./writeup_images/problemturn.png "Problematic Turn Ahead"
 [hist]: ./writeup_images/hist.png "Histogram"
 [gentlerecovery]: ./writeup_images/gentlerecovery.png "Gentle Recovery Image"
-[aggressiverecovery]: ./writeup_images/aggressive_recovery.png "Aggressive Recovery Image"
+[aggressiverecovery]: ./writeup_images/aggressiverecovery.png "Aggressive Recovery Image"
 [image7]: ./examples/placeholder_small.png "Flipped Image"
 
 
