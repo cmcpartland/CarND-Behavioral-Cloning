@@ -2,6 +2,7 @@
 
 ---
 
+<<<<<<< HEAD
 **Behavioral Cloning Project**
 
 The goals / steps of this project are the following:
@@ -22,6 +23,9 @@ The goals / steps of this project are the following:
 [image7]: ./examples/placeholder_small.png "Flipped Image"
 
 
+=======
+Creating a Great Writeup
+>>>>>>> a477dabad073b3e022e0fc247edf4c4db4f8088a
 ---
 ### Files Submitted
 
