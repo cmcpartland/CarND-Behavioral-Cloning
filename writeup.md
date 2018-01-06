@@ -52,8 +52,10 @@ The only pre-processing done is normalization on line 60 of model.py, which norm
 
 #### 2. Model Architecture
 
-The model I used is a convolutional neural network based on nVidia’s end-to-end deep learning CNN for autonomous driving, found here https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/
+The model I used is a convolutional neural network based on nVidia’s end-to-end deep learning CNN for autonomous driving, found here https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/.
+
 A visual model is provided by nVidia:
+
 ![alt text][modelarchitecture]
 
 #### 3. Model parameter tuning
