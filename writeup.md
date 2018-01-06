@@ -17,8 +17,8 @@ The goals / steps of this project are the following:
 [straightdriving]: ./writeup_images/straightdriving.png "Straight Driving Example"
 [problemturn]: ./writeup_images/problemturn.png "Problematic Turn Ahead"
 [hist]: ./writeup_images/hist.png "Histogram"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
+[gentlerecovery]: ./writeup_images/gentlerecovery.png "Gentle Recovery Image"
+[aggressiverecovery]: ./writeup_images/aggressive_recovery.png "Aggressive Recovery Image"
 [image7]: ./examples/placeholder_small.png "Flipped Image"
 
 
@@ -104,4 +104,16 @@ Based on this performance, I noticed the model was able to handle large-radius t
 
 I decided I would also include a small amount of examples of ‘recovery’ in my original data set (~1500 example images), where the vehicle starts close to a lane divider and gently moves back towards the center of the lane. I trained a model on the entire data set. An example of a gentle recover is illustrated below:
 
+![alt text][gentlerecovery]
 
+The performance was better and the vehicle was getting closer to making that turn, but was still going off road because it wasn’t turning sharply enough.
+
+To teach the model to be more ‘comfortable’ about taking sharp turns, I generated a new set of data that included both aggressive recovery examples and also examples of exaggerated, slightly over-shot turns with eventual recovery. I figured a slightly over-shot turn with eventual recovery would more forcefully influence the model to take sharper turns. An example of an aggressive recovery is illustrated below:
+
+![alt text][aggressiverecovery]
+
+To make sure these ~5000 data points were more influential, I took the existing model, already trained on the entire set, and trained it on these points with a larger learning rate of 0.001 as opposed to the 0.0001 used for the entire set. This is accomplished in the model¬_retrain.py module, which loads in a previously saved model on line 43 and trains it on new data on line 67.
+
+#### 6. Final Results
+
+After training the model on both the original data set and the new one that included aggressive recoveries and exaggerated turns, the model was finally able to take the vehicle around track 1 successfully. See the video output.mp4 for the results. It can be seen in the video that the vehicle stays towards the center of the road for the entire duration and does not touch the ledges on either side.
