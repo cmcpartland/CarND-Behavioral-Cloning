@@ -14,9 +14,9 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 
 [modelarchitecture]: ./writeup_images/modelarchitecture.png "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
+[straightdriving]: ./writeup_images/straightdriving.png "Straight Driving Example"
+[problemturn]: ./writeup_images/problemturn.png "Problematic Turn Ahead"
+[hist]: ./writeup_images/hist.png "Histogram"
 [image5]: ./examples/placeholder_small.png "Recovery Image"
 [image6]: ./examples/placeholder_small.png "Normal Image"
 [image7]: ./examples/placeholder_small.png "Flipped Image"
@@ -58,66 +58,50 @@ A visual model is provided by nVidia:
 
 ![alt text][modelarchitecture]
 
-#### 3. Model parameter tuning
+In this application, the three input planes are the RGB layers of the vehicle cameras, and the output is the steering angle. The model is implemented between lines 59 and 95 of model.py. This model features 5 convolution layers as seen above and 4 full-connected layers with ReLU activations between each layer to introduce nonlinearity. 
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+#### 3. Model Parameters
 
-#### 4. Appropriate training data
+The ‘out-of-the-box’ Adam optimizer from Keras was used to train the network, so the learning rate was left at the default 0.0001. Otherwise, no other parameters were changed. 
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
+#### 4. Reducing Overfitting
 
-For details about how I created the training data, see the next section. 
+Separate data sets were used for training and validation to identify when the model was overfitting based on the training and validation performance. The split is carried out on line 17 of model.py and line 58 of model_retrain.py.
 
-### Model Architecture and Training Strategy
+### Training Strategy & Results
 
-#### 1. Solution Design Approach
+#### 1. Approach
 
-The overall strategy for deriving a model architecture was to ...
+I decided to use the Udacity simulator to generate my own training data so that I could get a better sense of how the model behaves based on the kind of data I generated. My approach would be to train the model on my simulated data, then test out the model on the autonomous mode in the Udacity simulator. For the driving behavior, I planned to stay in the center of the lane as best as possible and to make my steering inputs as accurate and as smooth as possible. 
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+![alt text][straightdriving]
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
+ I also planned to drive the course in the reverse direction to eliminate any left turn / right turn bias. Based on the performance, I would decide what to do next. In general, I always stuck for 5 epochs when training the model.
+ 
+#### 2.Initial Results
 
-To combat the overfitting, I modified the model so that ...
+After training the model using ~1500-2000 data points, the results were abysmal. The vehicle would veer off the road almost immediately after starting the sim. I realized I probably needed more data points to train the model. I generated more training data (~8000-9000 points) and trained the model again, and this time the behavior was better but still not satisfactory. The vehicle would start moving along the road and slightly follow the initial bend of the first turn, but as the turn radius decreased, the vehicle would slowly veer off road.
 
-Then I ... 
+#### 3. Improving the Model with More Data
 
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
+Since the vehicle was having trouble successfully completing a turn, I thought I again needed more data. To generate more points, I decided to use the images from the left and right cameras and the adjusted steering angles for these images, thereby tripling my data. Since I was dealing with a large amount of data now, I started to think of ways to cut down processing time. In the end, these efforts wasted much more time than it saved, as explained below.
 
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
+#### 4. Handling More Data
 
-#### 2. Final Model Architecture
+With so much training data (close to 30,000 points), I decided that maybe I should try to compress each image by resizing it to half its original size. I tried to integrate the resizing into the model using a Lambda layer, but this was not helpful. In order to save and reload the image properly, I had to define a standalone function to be used in the Lambda layer that explicitly imported tensorflow from the keras backend. This significantly increased the training time by 10-15 times the original training time for reasons that I’m still not sure of. 
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+Because I tripled the amount of data points and added some more processing at the same time (calculating the adjusted steering angles for the left/right camera images), I figured they were causing the slow performance and I didn’t realize the resize layer was the real culprit. The model architecture was still usable with the Lambda resize layer, but training took several hours (if it didn’t shut down due to OOM issues). Once I discovered the reason for the slowdown, I removed it and decided to use the full-sized image.
 
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
+#### 5. Final Data Collection
 
-![alt text][image1]
+To move towards a solution faster, I then decided to discard the left/right camera images as it would remove a parameter (the steering adjustment value) and instead generate more data by flipping each image and accompanying it with the negative of the steering angle. After training on ~21,000 images, the results were improved – the model was able to take the vehicle completely around the first gentle bend and across the bridge. However, as soon as it got to a tight turn (after the bridge, as pictured below), it failed as the vehicle went off-road. 
 
-#### 3. Creation of the Training Set & Training Process
+![alt text][problemturn]
 
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
+Based on this performance, I noticed the model was able to handle large-radius turns well but didn’t know how to handle tight turns. I realized that since the majority of the train is either very gentle turns or straight runs, so much of the data is for steering angles close to 0.0 – the histogram below illustrates this clearly:
 
-![alt text][image2]
+![alt text][hist]
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
-
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
-
-![alt text][image6]
-![alt text][image7]
-
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+I decided I would also include a small amount of examples of ‘recovery’ in my original data set (~1500 example images), where the vehicle starts close to a lane divider and gently moves back towards the center of the lane. I trained a model on the entire data set. An example of a gentle recover is illustrated below:
 
 
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
-
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
