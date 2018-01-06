@@ -118,4 +118,4 @@ To make sure these ~5000 data points were more influential, I took the existing 
 
 After training the model on both the original data set and the new one that included aggressive recoveries and exaggerated turns, the model was finally able to take the vehicle around track 1 successfully. See the video output.mp4 for the results. It can be seen in the video that the vehicle stays towards the center of the road for the entire duration and does not touch the ledges on either side.
 
-[Video Output](https://www.youtube.com/watch?v==IA-M7duy3l8&feature=youtu.be)
+[Video Output](https://youtu.be/IA-M7duy3l8)
